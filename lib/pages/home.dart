@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:streamer/pages/director.dart';
 import 'package:streamer/pages/participant.dart';
 
@@ -12,6 +13,28 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   final _channelNameController = TextEditingController();
   final _userName = TextEditingController();
+  late int uid;
+  @override
+  void initState() {
+    getUserUid();
+    super.initState();
+  }
+
+  Future<void> getUserUid() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    int? storedUid = preferences.getInt("localUid");
+    if (storedUid != null) {
+      uid = storedUid;
+    } else {
+      
+      //should only happen once,unless they delelte the app
+      int time = DateTime.now().microsecondsSinceEpoch;
+      uid = int.parse(time.toString().substring(1, time.toString().length - 3));
+      preferences.setInt("localUid", uid);
+      print("seetingUid: $uid");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,6 +80,7 @@ class _HomeState extends State<Home> {
                         builder: (context) => Participant(
                               channelName: _channelNameController.text,
                               userName: _userName.text,
+                              uid: uid,
                             )));
               },
               child: Row(
