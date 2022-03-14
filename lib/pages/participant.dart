@@ -36,6 +36,18 @@ class _ParticipantState extends State<Participant> {
     super.initState();
   }
 
+  @override
+  void dispose() {
+    _users.clear();
+    _engine.leaveChannel();
+    _engine.destroy();
+    _channel?.leave();
+    _client?.logout();
+    _client?.destroy();
+
+    super.dispose();
+  }
+
   Future<void> initilizeAgora() async {
     _engine = await RtcEngine.createWithContext(RtcEngineContext(appId));
     _client = await AgoraRtmClient.createInstance(appId);
@@ -75,14 +87,14 @@ class _ParticipantState extends State<Participant> {
     await _client?.login(null, widget.uid.toString());
     _channel = await _client?.createChannel(widget.channelName);
     await _channel?.join();
-    await _engine.joinChannel(null, widget.channelName, null, widget.uid);
+    await _engine.joinChannel("", widget.channelName, null, widget.uid);
 
     //callbacks for RTM Channel
     _channel?.onMemberJoined = (AgoraRtmMember member) {
       print("Member Joined:" + member.userId + ", channel " + member.channelId);
     };
     _channel?.onMemberLeft = (AgoraRtmMember member) {
-      print("member left" + member.userId + ', channel:' + member.channelId);
+      print("Member left" + member.userId + ', channel:' + member.channelId);
     };
     _channel?.onMessageReceived =
         (AgoraRtmMessage message, AgoraRtmMember member) {
@@ -161,7 +173,16 @@ class _ParticipantState extends State<Participant> {
   }
 
   Widget _broadcastView() {
-    return Expanded(child: RtcLocalView.SurfaceView());
+    if (_users.isEmpty) {
+      return Center(
+        child: Text("No Users"),
+      );
+    }
+    return Row(
+      children: [
+        Expanded(child: RtcLocalView.SurfaceView()),
+      ],
+    );
   }
 
   void _onToggleMute() {
