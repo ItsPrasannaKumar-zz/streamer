@@ -1,13 +1,14 @@
 import 'package:agora_rtc_engine/rtc_engine.dart';
 import 'package:agora_rtm/agora_rtm.dart';
+import 'package:streamer/Model/user.dart';
 
 class DirectorModel {
   RtcEngine? engine;
   AgoraRtmClient? client;
   AgoraRtmChannel? channel;
-  Set<int>? activeUsers;
-  Set<int>? lobbyUsers;
-  int? localUser;
+  Set<AgoraUser>? activeUsers;
+  Set<AgoraUser>? lobbyUsers;
+  AgoraUser? localUser;
   DirectorModel(
       {this.engine,
       this.client,
@@ -20,9 +21,9 @@ class DirectorModel {
     RtcEngine? engine,
     AgoraRtmClient? client,
     AgoraRtmChannel? channel,
-    Set<int>? activeUsers,
-    Set<int>? lobbyUsers,
-    int? localUser,
+    Set<AgoraUser>? activeUsers,
+    Set<AgoraUser>? lobbyUsers,
+    AgoraUser? localUser,
   }) {
     return DirectorModel(
       engine: engine ?? this.engine,

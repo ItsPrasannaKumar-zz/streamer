@@ -6,6 +6,7 @@ import 'package:agora_rtc_engine/rtc_local_view.dart' as RtcRemoteView;
 import 'package:agora_rtm/agora_rtm.dart';
 
 import 'package:flutter/material.dart';
+import 'package:streamer/Model/user.dart';
 import 'package:streamer/utils/appId.dart';
 
 class Participant extends StatefulWidget {
@@ -24,7 +25,7 @@ class Participant extends StatefulWidget {
 }
 
 class _ParticipantState extends State<Participant> {
-  List<int> _users = [];
+  List<AgoraUser> _users = [];
   late RtcEngine _engine;
   AgoraRtmClient? _client;
   AgoraRtmChannel? _channel;
@@ -59,7 +60,7 @@ class _ParticipantState extends State<Participant> {
     _engine.setEventHandler(
         RtcEngineEventHandler(joinChannelSuccess: ((channel, uid, elapsed) {
       setState(() {
-        _users.add(uid);
+        _users.add(AgoraUser(uid: uid));
       });
     }), leaveChannel: (stats) {
       setState(() {
@@ -87,7 +88,7 @@ class _ParticipantState extends State<Participant> {
     await _client?.login(null, widget.uid.toString());
     _channel = await _client?.createChannel(widget.channelName);
     await _channel?.join();
-    await _engine.joinChannel("", widget.channelName, null, widget.uid);
+    await _engine.joinChannel(null, widget.channelName, null, widget.uid);
 
     //callbacks for RTM Channel
     _channel?.onMemberJoined = (AgoraRtmMember member) {

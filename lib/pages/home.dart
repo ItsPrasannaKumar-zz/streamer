@@ -104,6 +104,7 @@ class _HomeState extends State<Home> {
                       MaterialPageRoute(
                           builder: (context) => Director(
                                 channelName: _channelNameController.text,
+                                uid: uid,
                               )));
                 },
                 child: Row(
